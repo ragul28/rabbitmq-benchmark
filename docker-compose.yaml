@@ -1,0 +1,13 @@
+version: '3.6'
+services:
+
+ rabbitmq:
+  image: rabbitmq:3.8-management-alpine
+  container_name: rabbitmq
+  hostname: rabbitmq
+  restart: always
+  ports:
+   - "15672:15672"
+   - "5672:5672"
+  # volumes:
+  #  - ./rabbitmq_data/rabbitmq:/var/lib/rabbitmq
