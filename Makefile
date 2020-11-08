@@ -7,6 +7,9 @@ install:
 run:
 	go build && ./rabbitmq-benchmark
 
+start_mq:
+	docker-compose up -d
+
 mod:
 	GO111MODULE=on go mod tidy
 	GO111MODULE=on go mod verify

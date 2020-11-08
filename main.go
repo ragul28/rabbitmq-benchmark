@@ -31,7 +31,7 @@ func main() {
 			go queue.ConsumerMQ(ch, q)
 		}
 
-	case "publisher":
+	case "producer":
 		// Start publisher worker threads using goroutine
 		for w := 1; w <= numWorker; w++ {
 			ch, q := queue.InitRabbitMQ(rabbitURL)
