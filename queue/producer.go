@@ -30,10 +30,10 @@ func publisher(message string, ch *amqp.Channel, q amqp.Queue) {
 }
 
 // PublishMQ worker func
-func PublishMQ(ch *amqp.Channel, q amqp.Queue) {
+func PublishMQ(ch *amqp.Channel, q amqp.Queue, msgSize int) {
 	for {
 		// time.Sleep(10 * time.Millisecond)
 		rand.Seed(time.Now().UnixNano())
-		publisher(utils.RandString(10), ch, q)
+		publisher(utils.RandString(msgSize), ch, q)
 	}
 }

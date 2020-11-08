@@ -8,23 +8,25 @@ Benchmark cli needs to be run as consumer & producer in separate shell.
 
 * Running rabbitmq-benchmark as consumer
 ```sh
-./rabbitmq-benchmark -r consumer -wt 4 -url amqp://guest:guest@localhost:5672
+./rabbitmq-benchmark -r consumer -t 4 -s 20 -url amqp://guest:guest@localhost:5672
 ```
 
 * Running rabbitmq-benchmark as producer
 ```sh
-./rabbitmq-benchmark -r producer -wt 4 -url amqp://guest:guest@localhost:5672
+./rabbitmq-benchmark -r producer -t 4 -s 20 -url amqp://guest:guest@localhost:5672
 ```
 
 * Basic cli usage
 ```
 Usage of ./rabbitmq-benchmark:
   -r string
-        Select consumer or publisher (default "consumer")
+        Select consumer or producer (default "consumer")
+  -s int
+        producer message size (default 10)
+  -t int
+        Num of worker threads (default 3)
   -url string
         Rabbitmq connection string (default "amqp://guest:guest@localhost:5672")
-  -wt int
-        Num of worker threads (default 3)
 ```
 
 ## Build

@@ -11,12 +11,14 @@ import (
 var rabbitURL string
 var numWorker int
 var role string
+var msgSize int
 
 func main() {
 
 	flag.StringVar(&rabbitURL, "url", "amqp://guest:guest@localhost:5672", "Rabbitmq connection string")
-	flag.IntVar(&numWorker, "wt", 3, "Num of worker threads")
-	flag.StringVar(&role, "r", "consumer", "Select consumer or publisher")
+	flag.IntVar(&numWorker, "t", 3, "Num of worker threads")
+	flag.StringVar(&role, "r", "consumer", "Select consumer or producer")
+	flag.IntVar(&msgSize, "s", 10, "producer message size")
 
 	flag.Parse()
 
@@ -36,7 +38,7 @@ func main() {
 		for w := 1; w <= numWorker; w++ {
 			ch, q := queue.InitRabbitMQ(rabbitURL)
 			fmt.Printf("Publisher Worker %d started..\n", w)
-			go queue.PublishMQ(ch, q)
+			go queue.PublishMQ(ch, q, msgSize)
 		}
 
 	default:
