@@ -1,0 +1,56 @@
+version: '3.6'
+services:
+
+  rabbitmq-01:
+    image: rabbitmq:3.8-management-alpine
+    container_name: rabbitmq-01
+    hostname: rabbitmq-01
+    networks:
+      - rabbitmq-net
+    environment:
+      - RABBITMQ_CONFIG_FILE=/config/rabbitmq
+      - RABBITMQ_ERLANG_COOKIE=GYafLGdIMfAGBgJfkIK
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - ./rabbitmq_data/rabbitmq-01:/config/
+      - ./rabbitmq_data/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      # - ./rabbitmq_data/rabbitmq1/data:/var/lib/rabbitmq
+
+  rabbitmq-02:
+    image: rabbitmq:3.8-management-alpine
+    container_name: rabbitmq-02
+    hostname: rabbitmq-02
+    networks:
+      - rabbitmq-net
+    environment: 
+      - RABBITMQ_CONFIG_FILE=/config/rabbitmq
+      - RABBITMQ_ERLANG_COOKIE=GYafLGdIMfAGBgJfkIK
+    ports:
+      - "15673:15672"
+      - "5673:5672"
+    volumes:
+      - ./rabbitmq_data/rabbitmq-02/:/config/
+      - ./rabbitmq_data/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      # - ./rabbitmq_data/rabbitmq2/data:/var/lib/rabbitmq
+
+  rabbitmq-03:
+    image: rabbitmq:3.8-management-alpine
+    container_name: rabbitmq-03
+    hostname: rabbitmq-03
+    networks:
+      - rabbitmq-net
+    environment: 
+      - RABBITMQ_CONFIG_FILE=/config/rabbitmq
+      - RABBITMQ_ERLANG_COOKIE=GYafLGdIMfAGBgJfkIK
+    ports:
+      - "15674:15672"
+      - "5674:5672"
+    volumes:
+      - ./rabbitmq_data/rabbitmq-03/:/config/
+      - ./rabbitmq_data/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      # - ./rabbitmq_data/rabbitmq3/data:/var/lib/rabbitmq
+
+networks:
+  rabbitmq-net: {}
