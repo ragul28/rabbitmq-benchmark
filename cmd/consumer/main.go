@@ -14,7 +14,7 @@ var numWorker int
 func main() {
 
 	flag.StringVar(&rabbitURL, "url", "amqp://guest:guest@localhost:5672", "Rabbitmq connection string")
-	flag.IntVar(&numWorker, "wt", 3, "Num of worker threads")
+	flag.IntVar(&numWorker, "t", 3, "Num of worker threads")
 
 	flag.Parse()
 

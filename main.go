@@ -46,6 +46,7 @@ func main() {
 	}
 
 	utils.CloserHandler()
-	// Block main thread to allow running goroutines
+
+	// Block main thread to allow running goroutines forever.
 	select {}
 }
