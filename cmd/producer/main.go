@@ -1,30 +1,21 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 
 	"github.com/ragul28/rabbitmq-benchmark/queue"
 	"github.com/ragul28/rabbitmq-benchmark/utils"
 )
 
-var rabbitURL string
-var numWorker int
-var msgSize int
-
 func main() {
 
-	flag.StringVar(&rabbitURL, "url", "amqp://guest:guest@localhost:5672", "Rabbitmq connection string")
-	flag.IntVar(&numWorker, "t", 3, "Num of worker threads")
-	flag.IntVar(&msgSize, "s", 10, "producer message size")
-
-	flag.Parse()
+	cfg := utils.LoadFlags()
 
 	// Start publisher worker threads using goroutine
-	for w := 1; w <= numWorker; w++ {
-		ch, q := queue.InitRabbitMQ(rabbitURL)
+	for w := 1; w <= cfg.NumWorker; w++ {
+		ch, q := queue.InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
 		fmt.Printf("Publisher Worker %d started..\n", w)
-		go queue.PublishMQ(ch, q, msgSize)
+		go queue.PublishMQ(ch, q, cfg.MsgSize, cfg.TimeFrequencyMS)
 	}
 
 	utils.CloserHandler()

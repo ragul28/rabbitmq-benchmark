@@ -1,44 +1,33 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 
 	"github.com/ragul28/rabbitmq-benchmark/queue"
 	"github.com/ragul28/rabbitmq-benchmark/utils"
 )
 
-var rabbitURL string
-var numWorker int
-var role string
-var msgSize int
-
 func main() {
 
-	flag.StringVar(&rabbitURL, "url", "amqp://guest:guest@localhost:5672", "Rabbitmq connection string")
-	flag.IntVar(&numWorker, "t", 3, "Num of worker threads")
-	flag.StringVar(&role, "r", "consumer", "Select consumer or producer")
-	flag.IntVar(&msgSize, "s", 10, "producer message size")
+	cfg := utils.LoadFlags()
 
-	flag.Parse()
+	fmt.Println("Runing as", cfg.Role)
 
-	fmt.Println("Runing as", role)
-
-	switch role {
+	switch cfg.Role {
 	case "consumer":
 		// Start consumer worker threads using goroutine
-		for w := 1; w <= numWorker; w++ {
-			ch, q := queue.InitRabbitMQ(rabbitURL)
+		for w := 1; w <= cfg.NumWorker; w++ {
+			ch, q := queue.InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
 			fmt.Printf("Consumer Worker %d started..\n", w)
-			go queue.ConsumerMQ(ch, q)
+			go queue.ConsumerMQ(ch, q, cfg.EnableQuorum, cfg.EnableDebug)
 		}
 
 	case "producer":
 		// Start publisher worker threads using goroutine
-		for w := 1; w <= numWorker; w++ {
-			ch, q := queue.InitRabbitMQ(rabbitURL)
+		for w := 1; w <= cfg.NumWorker; w++ {
+			ch, q := queue.InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
 			fmt.Printf("Publisher Worker %d started..\n", w)
-			go queue.PublishMQ(ch, q, msgSize)
+			go queue.PublishMQ(ch, q, cfg.MsgSize, cfg.TimeFrequencyMS)
 		}
 
 	default:
