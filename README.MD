@@ -25,6 +25,14 @@ Benchmark cli needs to be run as consumer & producer in separate shell.
 * Basic cli usage
 ```
 Usage of ./rabbitmq-benchmark:
+  -debug
+        enable debug logging
+  -f int
+        producer message frequency
+  -n string
+        Select consumer or producer (default "queue")
+  -quorum
+        enable quorum queue type
   -r string
         Select consumer or producer (default "consumer")
   -s int
