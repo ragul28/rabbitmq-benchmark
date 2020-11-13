@@ -7,7 +7,7 @@ import (
 )
 
 // InitRabbitMQ init the mq connection
-func InitRabbitMQ(rabbitURL string) (*amqp.Channel, amqp.Queue) {
+func InitRabbitMQ(rabbitURL string, queueName string, enableQuorum bool) (*amqp.Channel, amqp.Queue) {
 	conn, err := amqp.Dial(rabbitURL + "/")
 	if err != nil {
 		log.Fatalf("%s: %s", "Failed to connect to RabbitMQ", err)
@@ -18,13 +18,21 @@ func InitRabbitMQ(rabbitURL string) (*amqp.Channel, amqp.Queue) {
 		log.Fatalf("%s: %s", "Failed to open a channel", err)
 	}
 
+	var queueArgs amqp.Table = nil
+
+	if enableQuorum {
+		queueArgs = amqp.Table{
+			"x-queue-type": "quorum",
+		}
+	}
+
 	q, err := ch.QueueDeclare(
-		"publisher", // name
-		true,        // durable
-		false,       // delete when unused
-		false,       // exclusive
-		false,       // no-wait
-		nil,         // arguments
+		queueName, // name
+		true,      // durable
+		false,     // delete when unused
+		false,     // exclusive
+		false,     // no-wait
+		queueArgs, // arguments
 	)
 	if err != nil {
 		log.Fatalf("%s: %s", "Failed to declare a queue", err)

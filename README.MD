@@ -2,7 +2,13 @@
 
 Simple rabbitmq benchmark tool which produce high load messages using goroutines as worker threads.  
 
-## Usage 
+## Install & Usage 
+
+* Download pre-compiled binaries from [release page](https://github.com/ragul28/rabbitmq-benchmark/releases).
+```sh
+tar -xvf rabbitmq-benchmark_linux_amd64.tar.gz
+chmod +x rabbitmq-benchmark
+```
 
 Benchmark cli needs to be run as consumer & producer in separate shell.
 
@@ -19,6 +25,14 @@ Benchmark cli needs to be run as consumer & producer in separate shell.
 * Basic cli usage
 ```
 Usage of ./rabbitmq-benchmark:
+  -debug
+        enable debug logging
+  -f int
+        producer message frequency
+  -n string
+        Select consumer or producer (default "queue")
+  -quorum
+        enable quorum queue type
   -r string
         Select consumer or producer (default "consumer")
   -s int

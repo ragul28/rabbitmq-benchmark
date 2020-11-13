@@ -19,7 +19,7 @@ func CloserHandler() {
 		fmt.Println("\rEnding load testing.")
 		// outputLoadInto()
 		elapsed := time.Since(start)
-		fmt.Printf("Total Time: %s", elapsed)
+		fmt.Printf("Total Time: %s\n", elapsed)
 		os.Exit(0)
 	}()
 }
