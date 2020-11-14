@@ -7,17 +7,19 @@ import (
 )
 
 // InitRabbitMQ init the mq connection
-func InitRabbitMQ(rabbitURL string, queueName string, enableQuorum bool) (*amqp.Channel, amqp.Queue, error) {
+func InitRabbitMQ(rabbitURL string, queueName string, enableQuorum bool) (*amqp.Channel, amqp.Queue, chan *amqp.Error, error) {
 	conn, err := amqp.Dial(rabbitURL + "/")
 	if err != nil {
 		log.Printf("%s: %s", "Failed to connect to RabbitMQ", err)
-		return nil, amqp.Queue{}, err
+		return nil, amqp.Queue{}, nil, err
 	}
+	//error channel
+	notify := conn.NotifyClose(make(chan *amqp.Error))
 
 	ch, err := conn.Channel()
 	if err != nil {
 		log.Printf("%s: %s", "Failed to open a channel", err)
-		return nil, amqp.Queue{}, err
+		return nil, amqp.Queue{}, nil, err
 	}
 
 	var queueArgs amqp.Table = nil
@@ -40,5 +42,5 @@ func InitRabbitMQ(rabbitURL string, queueName string, enableQuorum bool) (*amqp.
 		log.Fatalf("%s: %s", "Failed to declare a queue", err)
 	}
 
-	return ch, q, nil
+	return ch, q, notify, nil
 }
