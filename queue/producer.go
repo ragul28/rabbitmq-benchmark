@@ -35,7 +35,7 @@ func publisher(message string, ch *amqp.Channel, q amqp.Queue) error {
 
 // PublishMQ worker func
 func PublishMQ(cfg utils.ConfigStore) {
-	ch, q, err := InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
+	ch, q, _, err := InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func PublishMQ(cfg utils.ConfigStore) {
 
 		if err != nil {
 			// Sleep 15 sec before retry the amqp connection init
-			ch, q, err = InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
+			ch, q, _, err = InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
 			if err != nil {
 				log.Println("Sleep 15 sec before retrying the publish")
 				time.Sleep(15 * time.Second)
