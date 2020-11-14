@@ -6,20 +6,27 @@ import (
 	"github.com/streadway/amqp"
 )
 
-// InitRabbitMQ init the mq connection
-func InitRabbitMQ(rabbitURL string, queueName string, enableQuorum bool) (*amqp.Channel, amqp.Queue) {
+// InitRabbitMQ init the mq connection & retunrs channel, queue & error ch
+func InitRabbitMQ(rabbitURL string, queueName string, enableQuorum bool) (*amqp.Channel, amqp.Queue, chan *amqp.Error, error) {
+
 	conn, err := amqp.Dial(rabbitURL + "/")
 	if err != nil {
-		log.Fatalf("%s: %s", "Failed to connect to RabbitMQ", err)
+		log.Printf("%s: %s", "Failed to connect to RabbitMQ", err)
+		return nil, amqp.Queue{}, nil, err
 	}
+
+	// connection close notify on error channel
+	notify := conn.NotifyClose(make(chan *amqp.Error))
 
 	ch, err := conn.Channel()
 	if err != nil {
-		log.Fatalf("%s: %s", "Failed to open a channel", err)
+		log.Printf("%s: %s", "Failed to open a channel", err)
+		return nil, amqp.Queue{}, nil, err
 	}
 
 	var queueArgs amqp.Table = nil
 
+	// Enable quorum queue based on quorum flage
 	if enableQuorum {
 		queueArgs = amqp.Table{
 			"x-queue-type": "quorum",
@@ -38,5 +45,5 @@ func InitRabbitMQ(rabbitURL string, queueName string, enableQuorum bool) (*amqp.
 		log.Fatalf("%s: %s", "Failed to declare a queue", err)
 	}
 
-	return ch, q
+	return ch, q, notify, nil
 }
