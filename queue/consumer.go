@@ -1,8 +1,11 @@
 package queue
 
 import (
+	"fmt"
 	"log"
+	"time"
 
+	"github.com/ragul28/rabbitmq-benchmark/utils"
 	"github.com/streadway/amqp"
 )
 
@@ -28,10 +31,12 @@ func consumer(ch *amqp.Channel, q amqp.Queue, enableQuorum bool) (<-chan amqp.De
 	)
 
 	if err != nil {
-		log.Fatalf("%s: %s", "Failed to register consumer", err)
+		log.Printf("%s: %s", "Failed to register consumer", err)
+		return nil, err
 	}
 
-	forever := make(chan bool)
+	return msgs, nil
+}
 
 // ConsumerMQ worker func
 func ConsumerMQ(cfg utils.ConfigStore) {
@@ -56,9 +61,7 @@ func ConsumerMQ(cfg utils.ConfigStore) {
 			}
 		}
 	}
-			d.Ack(false)
 }
-	}()
 
 func failuerRetry(cfg utils.ConfigStore) (*amqp.Channel, amqp.Queue, chan *amqp.Error, <-chan amqp.Delivery) {
 	for {
