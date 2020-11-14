@@ -6,14 +6,16 @@ import (
 	"github.com/streadway/amqp"
 )
 
-// InitRabbitMQ init the mq connection
+// InitRabbitMQ init the mq connection & retunrs channel, queue & error ch
 func InitRabbitMQ(rabbitURL string, queueName string, enableQuorum bool) (*amqp.Channel, amqp.Queue, chan *amqp.Error, error) {
+
 	conn, err := amqp.Dial(rabbitURL + "/")
 	if err != nil {
 		log.Printf("%s: %s", "Failed to connect to RabbitMQ", err)
 		return nil, amqp.Queue{}, nil, err
 	}
-	//error channel
+
+	// connection close notify on error channel
 	notify := conn.NotifyClose(make(chan *amqp.Error))
 
 	ch, err := conn.Channel()
@@ -24,6 +26,7 @@ func InitRabbitMQ(rabbitURL string, queueName string, enableQuorum bool) (*amqp.
 
 	var queueArgs amqp.Table = nil
 
+	// Enable quorum queue based on quorum flage
 	if enableQuorum {
 		queueArgs = amqp.Table{
 			"x-queue-type": "quorum",

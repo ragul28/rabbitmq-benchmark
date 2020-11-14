@@ -14,6 +14,7 @@ func consumer(ch *amqp.Channel, q amqp.Queue, enableQuorum bool) (<-chan amqp.De
 
 	var queueArgs amqp.Table = nil
 
+	// Enable quorum queue based on quorum flage
 	if enableQuorum {
 		queueArgs = amqp.Table{
 			"x-queue-type": "quorum",
@@ -45,12 +46,10 @@ func ConsumerMQ(cfg utils.ConfigStore) {
 	}
 	msgs, _ := consumer(ch, q, cfg.EnableQuorum)
 
-	// forever := make(chan bool)
 	var d amqp.Delivery
-	// d := make(chan amqp.Delivery)
 
-	for { //receive loop
-		select { //check connection
+	for {
+		select {
 		case <-notify:
 			fmt.Println("Detects connection failuer, retring..")
 			ch, q, notify, msgs = failuerRetry(cfg)
@@ -62,6 +61,7 @@ func ConsumerMQ(cfg utils.ConfigStore) {
 	}
 }
 
+// failuerRetry infinite loop to retry the amqp connection.
 func failuerRetry(cfg utils.ConfigStore) (*amqp.Channel, amqp.Queue, chan *amqp.Error, <-chan amqp.Delivery) {
 	for {
 		ch, q, notify, err := InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
