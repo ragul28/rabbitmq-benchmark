@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -10,7 +11,7 @@ import (
 )
 
 // publisher Publish messages
-func publisher(message string, ch *amqp.Channel, q amqp.Queue) {
+func publisher(message string, ch *amqp.Channel, q amqp.Queue) error {
 
 	err := ch.Publish(
 		"",     // exchange
@@ -23,17 +24,35 @@ func publisher(message string, ch *amqp.Channel, q amqp.Queue) {
 		})
 
 	if err != nil {
-		log.Fatalf("%s: %s", "Failed to publish a message", err)
+		log.Printf("%s: %s", "Failed to publish a message", err)
+		return err
 	}
 
-	// fmt.Println("published message: " + message)
+	fmt.Println("published message: " + message)
+
+	return nil
 }
 
 // PublishMQ worker func
-func PublishMQ(ch *amqp.Channel, q amqp.Queue, msgSize int, timeFrequencyMS int) {
+func PublishMQ(cfg utils.ConfigStore) {
+	ch, q, err := InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
+	if err != nil {
+		log.Fatal(err)
+	}
 	for {
-		time.Sleep(time.Duration(timeFrequencyMS) * time.Millisecond)
-		rand.Seed(time.Now().UnixNano())
-		publisher(utils.RandString(msgSize), ch, q)
+		if (ch != nil && q != amqp.Queue{}) {
+			rand.Seed(time.Now().UnixNano())
+			err = publisher(utils.RandString(cfg.MsgSize), ch, q)
+			time.Sleep(time.Duration(cfg.TimeFrequencyMS) * time.Millisecond)
+		}
+
+		if err != nil {
+			// Sleep 15 sec before retry the amqp connection init
+			ch, q, err = InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
+			if err != nil {
+				log.Println("Sleep 15 sec before retrying the publish")
+				time.Sleep(15 * time.Second)
+			}
+		}
 	}
 }
