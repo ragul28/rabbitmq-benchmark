@@ -17,17 +17,15 @@ func main() {
 	case "consumer":
 		// Start consumer worker threads using goroutine
 		for w := 1; w <= cfg.NumWorker; w++ {
-			ch, q := queue.InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
 			fmt.Printf("Consumer Worker %d started..\n", w)
-			go queue.ConsumerMQ(ch, q, cfg.EnableQuorum, cfg.EnableDebug)
+			go queue.ConsumerMQ(cfg)
 		}
 
 	case "producer":
 		// Start publisher worker threads using goroutine
 		for w := 1; w <= cfg.NumWorker; w++ {
-			ch, q := queue.InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
 			fmt.Printf("Publisher Worker %d started..\n", w)
-			go queue.PublishMQ(ch, q, cfg.MsgSize, cfg.TimeFrequencyMS)
+			go queue.PublishMQ(cfg)
 		}
 
 	default:

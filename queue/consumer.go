@@ -1,16 +1,20 @@
 package queue
 
 import (
+	"fmt"
 	"log"
+	"time"
 
+	"github.com/ragul28/rabbitmq-benchmark/utils"
 	"github.com/streadway/amqp"
 )
 
-// ConsumerMQ consume queue messages
-func ConsumerMQ(ch *amqp.Channel, q amqp.Queue, enableQuorum bool, enableDebug bool) {
+// consumer consume queue messages
+func consumer(ch *amqp.Channel, q amqp.Queue, enableQuorum bool) (<-chan amqp.Delivery, error) {
 
 	var queueArgs amqp.Table = nil
 
+	// Enable quorum queue based on quorum flage
 	if enableQuorum {
 		queueArgs = amqp.Table{
 			"x-queue-type": "quorum",
@@ -28,19 +32,46 @@ func ConsumerMQ(ch *amqp.Channel, q amqp.Queue, enableQuorum bool, enableDebug b
 	)
 
 	if err != nil {
-		log.Fatalf("%s: %s", "Failed to register consumer", err)
+		return nil, err
 	}
 
-	forever := make(chan bool)
+	return msgs, nil
+}
 
-	go func() {
-		for d := range msgs {
-			if enableDebug {
-				log.Printf("consumer message: %s", d.Body)
+// ConsumerMQ worker func
+func ConsumerMQ(cfg utils.ConfigStore) {
+	ch, q, notify, err := InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
+	if err != nil {
+		log.Printf("%s: %s", "Failed to register consumer", err)
+	}
+	msgs, _ := consumer(ch, q, cfg.EnableQuorum)
+
+	var d amqp.Delivery
+
+	for {
+		select {
+		case <-notify:
+			fmt.Println("Detects connection failuer, retring..")
+			ch, q, notify, msgs = failuerRetry(cfg)
+		case d = <-msgs:
+			if cfg.EnableDebug {
+				log.Printf("consumer message: %s\n", d.Body)
 			}
-			d.Ack(false)
 		}
-	}()
+	}
+}
 
-	<-forever
+// failuerRetry infinite loop to retry the amqp connection.
+func failuerRetry(cfg utils.ConfigStore) (*amqp.Channel, amqp.Queue, chan *amqp.Error, <-chan amqp.Delivery) {
+	for {
+		ch, q, notify, err := InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
+		if err != nil {
+			log.Println("Sleep 15 sec before retrying the publish")
+			time.Sleep(15 * time.Second)
+		} else {
+			fmt.Println("Reconnection is successful.")
+			msgs, _ := consumer(ch, q, cfg.EnableQuorum)
+			return ch, q, notify, msgs
+		}
+	}
 }
