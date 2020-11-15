@@ -36,7 +36,7 @@ func publisher(message string, ch *amqp.Channel, q amqp.Queue) error {
 func PublishMQ(cfg utils.ConfigStore) {
 	ch, q, _, err := InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
 	if err != nil {
-		log.Printf("%s: %s", "Failed to publish a message", err)
+		log.Fatalf("%s: %s", "Failed to publish a message", err)
 	}
 	for {
 		if (ch != nil && q != amqp.Queue{}) {
