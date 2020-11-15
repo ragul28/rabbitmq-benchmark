@@ -42,7 +42,7 @@ func consumer(ch *amqp.Channel, q amqp.Queue, enableQuorum bool) (<-chan amqp.De
 func ConsumerMQ(cfg utils.ConfigStore) {
 	ch, q, notify, err := InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
 	if err != nil {
-		log.Printf("%s: %s", "Failed to register consumer", err)
+		log.Fatalf("%s: %s", "Failed to register consumer", err)
 	}
 	msgs, _ := consumer(ch, q, cfg.EnableQuorum)
 
@@ -57,6 +57,8 @@ func ConsumerMQ(cfg utils.ConfigStore) {
 			if cfg.EnableDebug {
 				log.Printf("consumer message: %s\n", d.Body)
 			}
+			// Manual ack for consumed messages
+			d.Ack(false)
 		}
 	}
 }
