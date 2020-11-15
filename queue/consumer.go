@@ -57,6 +57,8 @@ func ConsumerMQ(cfg utils.ConfigStore) {
 			if cfg.EnableDebug {
 				log.Printf("consumer message: %s\n", d.Body)
 			}
+			// Manual ack for consumed messages
+			d.Ack(false)
 		}
 	}
 }
