@@ -11,7 +11,7 @@ import (
 )
 
 // publisher Publish messages
-func publisher(message string, ch *amqp.Channel, q amqp.Queue) error {
+func publisher(message string, ch *amqp.Channel, q amqp.Queue, endebug bool) error {
 
 	err := ch.Publish(
 		"",     // exchange
@@ -27,21 +27,23 @@ func publisher(message string, ch *amqp.Channel, q amqp.Queue) error {
 		return err
 	}
 
-	fmt.Println("published message: " + message)
+	utils.DebugLogging(fmt.Sprintf("published message: %s\n", message), endebug)
 
 	return nil
 }
 
 // PublishMQ worker func
 func PublishMQ(cfg utils.ConfigStore) {
+
 	ch, q, _, err := InitRabbitMQ(cfg.RabbitURL, cfg.QueueName, cfg.EnableQuorum)
 	if err != nil {
 		log.Fatalf("%s: %s", "Failed to publish a message", err)
 	}
+
 	for {
 		if (ch != nil && q != amqp.Queue{}) {
 			rand.Seed(time.Now().UnixNano())
-			err = publisher(utils.RandString(cfg.MsgSize), ch, q)
+			err = publisher(utils.RandString(cfg.MsgSize), ch, q, cfg.EnableDebug)
 			time.Sleep(time.Duration(cfg.TimeFrequencyMS) * time.Millisecond)
 		}
 

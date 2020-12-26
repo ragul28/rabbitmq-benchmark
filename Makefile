@@ -8,10 +8,10 @@ run:
 	go build && ./rabbitmq-benchmark
 
 run_p:
-	go build && ./rabbitmq-benchmark -t 1 -r producer -f 1000
+	go build && ./rabbitmq-benchmark -t 2 -r producer -debug -f 1000
 
 run_c:
-	go build && ./rabbitmq-benchmark -t 1 -r consumer -debug
+	go build && ./rabbitmq-benchmark -t 5 -r consumer -debug
 
 start_mq:
 	docker-compose up -d
