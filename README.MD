@@ -2,7 +2,7 @@
 
 Simple rabbitmq benchmark tool which produce high load messages using goroutines as worker threads.  
 
-## Install & Usage 
+## Install
 
 * Download pre-compiled binaries from [release page](https://github.com/ragul28/rabbitmq-benchmark/releases).
 ```sh
@@ -10,7 +10,7 @@ tar -xvf rabbitmq-benchmark_linux_amd64.tar.gz
 chmod +x rabbitmq-benchmark
 ```
 
-Benchmark cli needs to be run as consumer & producer in separate shell.
+## Usage 
 
 * Running rabbitmq-benchmark as consumer
 ```sh
@@ -22,15 +22,17 @@ Benchmark cli needs to be run as consumer & producer in separate shell.
 ./rabbitmq-benchmark -r producer -t 4 -s 20 -url amqp://guest:guest@localhost:5672
 ```
 
+> Consumer & producer needs to run in separate shell as selected using `-r` flage.
+
 * Basic cli usage
-```
+```md
 Usage of ./rabbitmq-benchmark:
   -debug
         enable debug logging
   -f int
         producer message frequency
   -n string
-        Select consumer or producer (default "queue")
+        name of the amqp queue (default "queue")
   -quorum
         enable quorum queue type
   -r string
@@ -55,13 +57,13 @@ make build
 ## Rabbitmq Cluster setup
 
 * Run cluster using docker compose
-```bash
+```sh
 cd cluster/
 docker-compose up -d
 ```
 
 * Enable classic queue mirroring & auto node sync
-```
+```sh
 docker exec -it rabbitmq-01 rabbitmqctl set_policy ha-fed \
     ".*" '{"ha-mode":"all", "federation-upstream-set":"all", "ha-sync-mode":"automatic", }' \
     --priority 1 \
@@ -69,7 +71,7 @@ docker exec -it rabbitmq-01 rabbitmqctl set_policy ha-fed \
 ```
 
 ### Create Admin user
-```bash
+```sh
 # add user
 rabbitmqctl add_user admin admin
 # set user as admin

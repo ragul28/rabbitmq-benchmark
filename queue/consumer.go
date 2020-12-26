@@ -51,12 +51,10 @@ func ConsumerMQ(cfg utils.ConfigStore) {
 	for {
 		select {
 		case <-notify:
-			fmt.Println("Detects connection failuer, retring..")
+			log.Println("Detects connection failuer, retrying..")
 			ch, q, notify, msgs = failuerRetry(cfg)
 		case d = <-msgs:
-			if cfg.EnableDebug {
-				log.Printf("consumer message: %s\n", d.Body)
-			}
+			utils.DebugLogging(fmt.Sprintf("Consumer message:%s\n", d.Body), cfg.EnableDebug)
 			// Manual ack for consumed messages
 			d.Ack(false)
 		}
@@ -70,8 +68,9 @@ func failuerRetry(cfg utils.ConfigStore) (*amqp.Channel, amqp.Queue, chan *amqp.
 		if err != nil {
 			log.Println("Sleep 15 sec before retrying the publish")
 			time.Sleep(15 * time.Second)
+
 		} else {
-			fmt.Println("Reconnection is successful.")
+			log.Println("Reconnection is successful.")
 			msgs, _ := consumer(ch, q, cfg.EnableQuorum)
 			return ch, q, notify, msgs
 		}

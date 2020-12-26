@@ -15,7 +15,7 @@ func LoadFlags() ConfigStore {
 	var cfg ConfigStore
 
 	flag.StringVar(&cfg.RabbitURL, "url", "amqp://guest:guest@localhost:5672", "Rabbitmq connection string")
-	flag.StringVar(&cfg.QueueName, "n", "queue", "Select consumer or producer")
+	flag.StringVar(&cfg.QueueName, "n", "queue", "name of the amqp queue")
 	flag.StringVar(&cfg.Role, "r", "consumer", "Select consumer or producer")
 	flag.IntVar(&cfg.NumWorker, "t", 3, "Num of worker threads")
 	flag.IntVar(&cfg.MsgSize, "s", 10, "producer message size")
