@@ -1,5 +1,5 @@
 build:
-	GOOS=linux GOARCH=amd64 go build -mod=vendor
+	GOOS=linux GOARCH=amd64 go build -mod=vendor -ldflags="-s -w"
 
 install:
 	go install
@@ -17,6 +17,6 @@ start_mq:
 	docker-compose up -d
 
 mod:
-	GO111MODULE=on go mod tidy
-	GO111MODULE=on go mod verify
-	GO111MODULE=on go mod vendor
+	go mod tidy
+	go mod verify
+	go mod vendor
