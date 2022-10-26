@@ -1,6 +1,9 @@
 build:
 	GOOS=linux GOARCH=amd64 go build -mod=vendor -ldflags="-s -w"
 
+build_mac:
+	GOOS=darwin GOARCH=amd64 go build -mod=vendor -ldflags="-s -w"
+
 install:
 	go install
 	
