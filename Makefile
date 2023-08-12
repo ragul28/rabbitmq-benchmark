@@ -1,5 +1,5 @@
 build:
-	GOOS=linux GOARCH=amd64 go build -mod=vendor -ldflags="-s -w"
+	go build -mod=vendor -ldflags="-s -w"
 
 install:
 	go install
