@@ -3,7 +3,7 @@ package queue
 import (
 	"log"
 
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 // InitRabbitMQ init the mq connection & retunrs channel, queue & error ch
