@@ -6,8 +6,8 @@ import (
 	"math/rand"
 	"time"
 
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/ragul28/rabbitmq-benchmark/utils"
-	"github.com/streadway/amqp"
 )
 
 // publisher Publish messages

@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/ragul28/rabbitmq-benchmark/utils"
-	"github.com/streadway/amqp"
 )
 
 // consumer consume queue messages
